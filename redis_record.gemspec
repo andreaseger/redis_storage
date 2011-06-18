@@ -14,7 +14,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'redis'
   s.add_dependency 'json'
-  s.add_development_dependency 'rspec'
+  s.add_dependency 'rails', '>= 3.0.0'
+  #s.add_development_dependency 'rspec'
 
   s.rubyforge_project = "redis_record"
 
