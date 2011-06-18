@@ -1,6 +1,6 @@
 require 'rails'
-#require 'rails/generators'
-#Rails::Generators.hidden_namespace << "redis"
+require 'rails/generators'
+Rails::Generators.hidden_namespaces << "redis"
 
 
 module RedisRecord
