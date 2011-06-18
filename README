@@ -1,0 +1,15 @@
+RedisRecord
+---
+
+* some kind of database mapper for redis on rails
+
+todo
+---
+
+* this readme need some work
+* the initializer
+* write some bloody tests for the Model/Generator and install script
+
+meta
+---
+sch1zo
