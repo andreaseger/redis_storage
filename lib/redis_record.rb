@@ -1,18 +1,18 @@
-require 'rails'
-require 'rails/generators'
-Rails::Generators.hidden_namespaces << "redis"
+#require 'rails'
+#require 'rails/generators'
+#Rails::Generators.hidden_namespaces << "redis"
 
 
 module RedisRecord
-  module Rails
-    class Railtie < ::Rails::Railtie
-      if ::Rails.version.to_f >= 3.1
-        config.app_generators.orm :redis
-      else
-        config.generators.orm :redis
-      end
-    end
-  end
+#  module Rails
+#    class Railtie < ::Rails::Railtie
+#      if ::Rails.version.to_f >= 3.1
+#        config.app_generators.orm :redis
+#      else
+#        config.generators.orm :redis
+#      end
+#    end
+#  end
 
   class Model
     def self.attrs
