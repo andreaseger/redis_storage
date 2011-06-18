@@ -1,5 +1,5 @@
 module RedisRecord
-  class Base < Rails::Generators::NamedBase
+  class RedisGenerator < ::Rails::Generators::NamedBase
     source_root File.expand_path('../templates', __FILE__)
     argument :attrs, :type => :array, :default => [], :banner => "field field"
     check_class_collision

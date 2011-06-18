@@ -24,7 +24,7 @@ module RedisRecord
         a
       end
     end
-    atrr_accessor *attrs
+    #atrr_accessor *attrs
 
     def initialize(params={})
       params.each do |key, value|
