@@ -1,6 +1,6 @@
 class <%= class_name %> < RedisRecord::Model
   def self.attrs
-    [ :id<%= a %> ]
+    [ :id<%=", :" unless attrs.empty?%><%= attrs.join(', :') %> ]
   end
   attr_accessor *attrs
 

@@ -1,7 +1,7 @@
 #require 'rails'
 #require 'rails/generators'
 #Rails::Generators.hidden_namespaces << "redis"
-
+Dir["tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)
 
 module RedisRecord
 #  module Rails
