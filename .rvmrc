@@ -1,0 +1,2 @@
+rvm use rbx-2.0.0pre@redisrecord --create
+export RBXOPT=-Xrbc.db=$HOME/.rbx

@@ -4,7 +4,7 @@ class <%= class_name %> < RedisRecord::Model
   end
   attr_accessor *attrs
 
-  def db_key
-    "<%= file_name %>:#{self.id}"
+  def self.db_key
+    "<%= file_name %>"
   end
 end

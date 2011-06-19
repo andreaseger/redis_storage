@@ -1,6 +1,7 @@
 #require 'rails'
 #require 'rails/generators'
 #Rails::Generators.hidden_namespaces << "redis"
+require 'json'
 Dir["tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)
 
 module RedisRecord
@@ -19,12 +20,12 @@ module RedisRecord
       [:id]
     end
     def attrs
-      sef.class.attrs.inject({}) do |a,key|
+      self.class.attrs.inject({}) do |a,key|
         a[key] = send(key)
         a
       end
     end
-    #atrr_accessor *attrs
+    attr_accessor *attrs
 
     def initialize(params={})
       params.each do |key, value|
@@ -42,7 +43,7 @@ module RedisRecord
       obj
     end
 
-    def self.get_by_id(id)
+    def self.find_by_id(id)
       new JSON.parse($db.get("#{db_key}:#{id}"))
     end
 
@@ -50,8 +51,11 @@ module RedisRecord
       $db.set db_key, attrs.to_json
     end
 
-    def db_key
+    def self.db_key
       raise NotImplementedError
+    end
+    def db_key
+      "#{self.class.db_key}:#{self.id}"
     end
   end
 end
