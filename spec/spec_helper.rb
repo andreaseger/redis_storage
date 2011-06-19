@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'lib/redis_record' # and any other gems you need
+require 'lib/RedisRecord' # and any other gems you need
 require 'redis'
 
 RSpec.configure do |config|

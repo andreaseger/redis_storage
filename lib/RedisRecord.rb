@@ -1,7 +1,7 @@
 require 'json'
-Dir["tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)
 
 module RedisRecord
+  require 'RedisRecord/railtie' if defined?(Rails)
 #  module Rails
 #    class Railtie < ::Rails::Railtie
 #      if ::Rails.version.to_f >= 3.1

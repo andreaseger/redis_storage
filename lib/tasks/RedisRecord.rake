@@ -1,6 +1,5 @@
 desc "copies an initializer for redis into the app"
-task :install do
-  puts "TODO: copy an initializer into the app"
+task :install_redis do
   init <<-INIT
 c = YAML.load_file("\#{::Rails.root.to_s}/config/ldap.yml")[::Rails.env]
 redis_config = { :host => c['host'], :port => c['port'], :password => c['password'], :db => c['db'] }
