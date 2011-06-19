@@ -1,6 +1,3 @@
-#require 'rails'
-#require 'rails/generators'
-#Rails::Generators.hidden_namespaces << "redis"
 require 'json'
 Dir["tasks/**/*.rake"].each { |ext| load ext } if defined?(Rake)
 
