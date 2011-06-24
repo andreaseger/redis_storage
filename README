@@ -18,6 +18,11 @@ or just install it manually
 
     gem install redis_storage
 
+Then this gem will need a global object $db which just is a Redis connection.
+
+    redis_config = { :host => 'localhost', :port => 6379, :password => '', :db => 1 }
+    $db = Redis.new(redis_config)
+
 Usage
 ---
 
@@ -49,8 +54,14 @@ Minimal Example
       attr_accessor *attrs
     end
 
-Rails 3 Generator
+Rails 3 Integration
 ---
+
+to initialize redis there is a rake task
+
+    rake install_redis
+
+The task will install a initializer file which creates the above mentioned $db object and a redis.yml file to configure the redis connection.
 
 There is also a Rails 3 Generator which will generates the above mentioned model
 

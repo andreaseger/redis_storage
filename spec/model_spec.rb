@@ -53,7 +53,14 @@ describe RedisStorage::Model do
           MockModel.create e
         end
       end
-
+      it 'should call .all if .find is called with no parama' do
+        MockModel.expects(:all)
+        MockModel.find
+      end
+      it 'should push the given Params from .find to .find_by_id' do
+        MockModel.expects(:find_by_id).with(3)
+        MockModel.find(3)
+      end
       context '#find_by_id' do
         1.upto(4) do |i|
           it "should find record #{i} and create a new instance" do
@@ -65,6 +72,11 @@ describe RedisStorage::Model do
         end
       end
       context '#all' do
+        it 'should return an empty array if there are no entries' do
+          Redis.any_instance.stubs(:smembers => [])
+          records = MockModel.all
+          records.should eq([])
+        end
         it 'should return all entries' do
           records = MockModel.all
           records.size.should eq(4)
@@ -110,6 +122,16 @@ describe RedisStorage::Model do
       it 'should add the id to the persisted set in redis' do
         id = model.save
         $db.sismember("mockmodel:persisted", id).should be_true
+      end
+    end
+    context '#update_attributes' do
+      it 'should take the given hash to update the attributes' do
+        model.update_attributes({:body => 'updated body'})
+        model.body.should eq('updated body')
+      end
+      it 'should call save' do
+        model.expects(:save=>1)
+        model.update_attributes({:body => 'updated body'})
       end
     end
     context '#delete!' do

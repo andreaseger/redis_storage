@@ -29,8 +29,13 @@ module RedisStorage
       obj
     end
 
+    def self.find(params=nil)
+      return find_by_id(params) unless params.nil?   #TODO perhaps make this at some point more generic
+      return all
+    end
     def self.find_by_id(entry_id)
-      new JSON.parse($db.get("#{db_key}:#{entry_id}"))
+      r = $db.get("#{db_key}:#{entry_id}")
+      new(JSON.parse(r)) unless r.nil?
     end
 
     def self.all
@@ -38,8 +43,12 @@ module RedisStorage
         "#{db_key}:#{i}"
       end
 
-      $db.mget(*keys).inject([]) do |a,json|
-        a << new(JSON.parse(json))
+      if keys.empty?
+        []
+      else
+        $db.mget(*keys).inject([]) do |a,json|
+          a << new(JSON.parse(json))
+        end
       end
     end
 
@@ -53,6 +62,12 @@ module RedisStorage
       serializable_hash.to_json
     end
 
+    def update_attributes(params)
+      params.each do |key, value|
+        send("#{key}=", value) unless key.to_sym == :id
+      end
+      save
+    end
     def save
       unless persisted?
         @id = $db.incr("#{db_key}:nextid")
@@ -68,6 +83,9 @@ module RedisStorage
       end
     end
 
+    def destroy
+      delete!     #for the default rails controller
+    end
     def delete!
       if persisted?
         $db.multi do
