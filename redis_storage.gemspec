@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Andreas Eger"]
   s.email       = ["dev@eger-andreas.de"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/sch1zo/redis_storage"
   s.summary     = %q{A simple Redis ORM for Rails}
-  s.description = %q{Provides a DataMapper for a Redis Backend in Rails, will also provide a Generator}
+  s.description = %q{Provides a databackend for a Redis in Rails, will also provide a Rails 3 Generator}
 
   s.add_dependency 'redis'
   s.add_dependency 'json'
