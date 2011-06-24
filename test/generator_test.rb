@@ -13,7 +13,7 @@ class RedisGeneratorTest < Rails::Generators::TestCase
 
   test 'should create a model file with a few basic lines' do
     run_generator %w(Schedule title body created_at)
-    assert_file 'app/models/schedule.rb', /class Schedule < RedisRecord::Model/
+    assert_file 'app/models/schedule.rb', /class Schedule < RedisStorage::Model/
     assert_file 'app/models/schedule.rb', /attr_accessor \*attrs/
   end
   test 'should set the classes attrs' do
@@ -25,21 +25,11 @@ class RedisGeneratorTest < Rails::Generators::TestCase
     end
   end
   test 'should set id as only class attribute if none given' do
-    run_generator %w(Schedule)
+    run_generator %w(Schedule title body)
     assert_file 'app/models/schedule.rb' do |model|
       assert_class_method :attrs, model do |attrs|
-        assert_match /[ :id ]/, attrs
+        assert_match /[ :title, :body ]/, attrs
       end
     end
   end
-
-  test 'should set the db_key' do
-    run_generator %w(Schedule title body created_at)
-    assert_file 'app/models/schedule.rb' do |model|
-      assert_class_method :db_key, model do |db_key|
-        assert_match /\"schedule\"/, db_key
-      end
-    end
-  end
-
 end

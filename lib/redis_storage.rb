@@ -1,17 +1,8 @@
 require 'json'
 require 'active_model'
 
-module RedisRecord
-  require 'RedisRecord/railtie' if defined?(Rails)
-#  module Rails
-#    class Railtie < ::Rails::Railtie
-#      if ::Rails.version.to_f >= 3.1
-#        config.app_generators.orm :redis
-#      else
-#        config.generators.orm :redis
-#      end
-#    end
-#  end
+module RedisStorage
+  require 'redis_storage/railtie' if defined?(Rails)
 
   class Model
     include ActiveModel::Validations

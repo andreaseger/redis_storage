@@ -1,10 +1,6 @@
-class <%= class_name %> < RedisRecord::Model
+class <%= class_name %> < RedisStorage::Model
   def self.attrs
     [ :id<%=", :" unless attrs.empty?%><%= attrs.join(', :') %> ]
   end
   attr_accessor *attrs
-
-  def self.db_key
-    "<%= file_name %>"
-  end
 end
