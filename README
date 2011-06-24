@@ -1,15 +1,29 @@
-RedisRecord
+RedisRecord(working Title)
 ---
 
 * some kind of database mapper for redis on rails
+* uses ActiveModel to provide things like validations
 
-todo
+Model
 ---
 
-* this readme need some work
-* the initializer
-* write some bloody tests for the Model/Generator and install script
+    require 'redisrecord'
+    class MockModel < RedisRecord::Model
+      def self.attrs
+        [:body, :title]
+      end
+      attr_accessor *attrs
+    end
+
+
+Generator
+---
+
+    rails g redis model field1 field2
+
+    rails g scaffold model field1:string field2:int -o redis
+
 
 meta
----
+--
 sch1zo
