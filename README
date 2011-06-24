@@ -1,29 +1,71 @@
-RedisRecord(working Title)
+RedisStorage
 ---
 
 * some kind of database mapper for redis on rails
 * uses ActiveModel to provide things like validations
+* provides a Rails 3 Generator
 
-Model
+Installation
 ---
 
-    require 'redisrecord'
-    class MockModel < RedisRecord::Model
+As this gem need redis running you will have to install it(see redis.io for more information on that task)
+
+Then just add the gem to your Gemfile and run bundler
+
+    gem 'redis_storage'
+
+or just install it manually
+
+    gem install redis_storage
+
+Usage
+---
+
+require the gem in your code
+
+    require 'redis_storage'
+
+create a model which inherit from RedisStorage::Model
+
+    class MyModel < RedisStorage::Model
+    ...
+    end
+
+and define the models attributes via self.attrs, additional to the defined attributes there will always be an attribute id
+
+    def self.attrs
+      [:body, :title]
+    end
+    attr_accessor *attrs
+
+Minimal Example
+---
+
+    require 'redis_storage'
+    class MyModel < RedisStorage::Model
       def self.attrs
         [:body, :title]
       end
       attr_accessor *attrs
     end
 
-
-Generator
+Rails 3 Generator
 ---
 
-    rails g redis model field1 field2
+There is also a Rails 3 Generator which will generates the above mentioned model
 
-    rails g scaffold model field1:string field2:int -o redis
+    rails g redis model attr1 attr2
 
+or
+
+    rails g scaffold model attr1:string attr2:int -o redis
 
 meta
---
+---
+
+Inspired by
+
+* some ideas from the redis backend in [scanty-redis](https://github.com/adamwiggins/scanty-redis)
+* various small sinatra projects from myself which use a pre version of this gem
+
 sch1zo
