@@ -14,7 +14,7 @@ describe RedisStorage::Model do
 
   context 'class' do
     it 'should have a db_key with the name of the class' do
-      MockModel.db_key.should eq('mockmodel')
+      MockModel.db_key.should eq('MockModel')
     end
     context '#build' do
       it 'should simply call new on MockModel' do
@@ -117,11 +117,11 @@ describe RedisStorage::Model do
       end
       it 'should create a redis entry' do
         id = model.save
-        JSON.parse($db.get("mockmodel:#{id}")).should == modelhash.merge('id'=>id)
+        JSON.parse($db.get("MockModel:#{id}")).should == modelhash.merge('id'=>id)
       end
       it 'should add the id to the persisted set in redis' do
         id = model.save
-        $db.sismember("mockmodel:persisted", id).should be_true
+        $db.sismember("MockModel:persisted", id).should be_true
       end
     end
     context '#update_attributes' do
@@ -146,12 +146,12 @@ describe RedisStorage::Model do
       it 'should remove the key from redis' do
         id=model.save
         model.delete!
-        $db.get("mockmodel:#{id}").should be_nil
+        $db.get("MockModel:#{id}").should be_nil
       end
       it 'should remove the id from the persisted set in redis' do
         id=model.save
         model.delete!
-        $db.sismember("mockmodel:persisted", id).should be_false
+        $db.sismember("MockModel:persisted", id).should be_false
       end
     end
 

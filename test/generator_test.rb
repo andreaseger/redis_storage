@@ -4,7 +4,7 @@ require 'test/unit'
 require 'bundler'
 Bundler.setup
 
-require 'lib/generators/rails/redis_generator'
+require './lib/generators/rails/redis_generator'
 
 class RedisGeneratorTest < Rails::Generators::TestCase
   destination File.expand_path("../tmp", File.dirname(__FILE__))

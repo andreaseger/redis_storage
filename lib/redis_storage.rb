@@ -107,7 +107,7 @@ module RedisStorage
     end
 
     def self.db_key
-      model_name.downcase
+      model_name
     end
     def db_key
       "#{self.class.db_key}:#{self.id}"

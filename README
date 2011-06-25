@@ -1,9 +1,26 @@
 RedisStorage
 ---
 
-* some kind of database mapper for redis on rails
+This is a little gem which provides a redis interface for models. It works out of the box with rails or can be used standalone.
+
+Basically I just got sick rewriting the same logic over and over again for each model of my little sinatra apps so this evolved. Then I wanted to write a new rails app an thought having this in a gem would be really nice, and a generator would be awesome.
+
+Features
+---
+
+* stores the attributes_hash of the model as JSON in redis
+* creates an index of all used ids(which will be set automatically)
+* compatible with the default rails controller
 * uses ActiveModel to provide things like validations
 * provides a Rails 3 Generator
+
+Roadmap aka. ToDo
+---
+
+* some wrappers for searching in a model(probably will need some indexes)
+* add something to make it easy to add an index(but there will be the update problematic)
+* perhaps some kind of dirty flag - or the ActiveModel::Dirty module, but that will make some things way more complicated
+* more tests/specs are always good
 
 Installation
 ---
@@ -73,6 +90,12 @@ or
 
 meta
 ---
+
+Tested with RSpec and testunit for the generator for
+* ree-1.8.7-2011.03
+* MRI 1.9.2
+* rbx
+* rbx-2.0.0pre
 
 Inspired by
 

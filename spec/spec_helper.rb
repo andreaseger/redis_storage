@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'lib/redis_storage' # and any other gems you need
+require './lib/redis_storage' # and any other gems you need
 require 'redis'
 
 RSpec.configure do |config|
