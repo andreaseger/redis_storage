@@ -29,9 +29,16 @@ module RedisStorage
       obj
     end
 
+    def self.random
+      i = $db.srandmember("#{db_key}:persisted")
+      find_by_id(i) unless i.nil?
+    end
     def self.find(params=nil)
-      return find_by_id(params) unless params.nil?   #TODO perhaps make this at some point more generic
-      return all
+      if params.nil?
+        all
+      else
+        find_by_id(params)   #TODO perhaps make this at some point more generic
+      end
     end
     def self.find_by_id(entry_id)
       r = $db.get("#{db_key}:#{entry_id}")

@@ -22,6 +22,12 @@ Roadmap aka. ToDo
 * perhaps some kind of dirty flag - or the ActiveModel::Dirty module, but that will make some things way more complicated
 * more tests/specs are always good
 
+Newest Stuff
+---
+
+* the generator now calls the test_framework generator for models
+* added a random method which returns a random item from the collection
+
 Installation
 ---
 

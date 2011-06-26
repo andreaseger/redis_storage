@@ -12,6 +12,7 @@ module Rails
       def create_model_file
         template 'model.rb', File.join('app/models',class_path,"#{file_name}.rb")
       end
+      hook_for :test_framework, :as=> :model
     end
   end
 end
