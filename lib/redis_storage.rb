@@ -30,7 +30,7 @@ module RedisStorage
     end
 
     def self.random
-      i = $db.srandmember("#{db_key}:persisted")
+      i = $db.srandmember(persisted_key)
       find_by_id(i) unless i.nil?
     end
     def self.find(params=nil)
@@ -41,12 +41,13 @@ module RedisStorage
       end
     end
     def self.find_by_id(entry_id)
+      return nil if entry_id.nil?
       r = $db.get("#{db_key}:#{entry_id}")
       new(JSON.parse(r)) unless r.nil?
     end
 
     def self.all
-      keys = $db.smembers("#{db_key}:persisted").map do |i|
+      keys = $db.smembers(persisted_key).map do |i|
         "#{db_key}:#{i}"
       end
 
@@ -60,13 +61,13 @@ module RedisStorage
     end
 
     def self.count
-      $db.scard("#{db_key}:persisted")
+      $db.scard(persisted_key)
     end
     def self.first
-      find_by_id $db.smembers("#{db_key}:persisted").sort.first
+      find_by_id $db.smembers(persisted_key).sort.first
     end
     def self.last
-      find_by_id $db.smembers("#{db_key}:persisted").sort.last
+      find_by_id $db.smembers(persisted_key).sort.last
     end
     def serializable_hash
       self.class.attrs.inject({:id => @id}) do |a,key|
@@ -86,12 +87,12 @@ module RedisStorage
     end
     def save
       unless persisted?
-        @id = $db.incr("#{db_key}:nextid")
+        @id = $db.incr(self.class.next_id_key)
       end
       if valid?
         $db.multi do
-          $db.set db_key, serializable_hash.to_json
-          $db.sadd "#{self.class.db_key}:persisted", id
+          $db.set db_key, to_json
+          $db.sadd self.class.persisted_key, id
         end
         @id
       else
@@ -106,7 +107,7 @@ module RedisStorage
       if persisted?
         $db.multi do
           $db.del db_key
-          $db.srem "#{self.class.db_key}:persisted", id
+          $db.srem self.class.persisted_key, id
         end
         true
       else
@@ -118,7 +119,7 @@ module RedisStorage
       if id.nil?
         false
       else
-        $db.sismember("#{self.class.db_key}:persisted", id)
+        $db.sismember(self.class.persisted_key, id)
       end
     end
 
@@ -128,6 +129,9 @@ module RedisStorage
     def db_key
       "#{self.class.db_key}:#{self.id}"
     end
+    def self.persisted_key
+      "#{db_key}:persisted"
+    end
 
     def initialize(params={})
       @id = nil
@@ -135,6 +139,10 @@ module RedisStorage
       params.each do |key, value|
         send("#{key}=", value)
       end
+    end
+    private
+    def self.next_id_key
+      "#{db_key}:next_id"
     end
   end
 end
