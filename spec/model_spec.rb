@@ -90,6 +90,21 @@ describe RedisStorage::Model do
           end
         end
       end
+      context '#count' do
+        it 'should return the count of the persited model instances' do
+          MockModel.count.should eq(MockModel.all.size)
+        end
+      end
+      context '#first' do
+        it 'should return the instance with the oldest - smallest id' do
+          MockModel.first.id.should eq(1)
+        end
+      end
+      context '#last' do
+        it 'should return the instance with the newest - highest id' do
+          MockModel.last.id.should eq(4)
+        end
+      end
     end
   end
 

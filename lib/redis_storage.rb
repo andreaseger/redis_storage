@@ -59,6 +59,15 @@ module RedisStorage
       end
     end
 
+    def self.count
+      $db.scard("#{db_key}:persisted")
+    end
+    def self.first
+      find_by_id $db.smembers("#{db_key}:persisted").sort.first
+    end
+    def self.last
+      find_by_id $db.smembers("#{db_key}:persisted").sort.last
+    end
     def serializable_hash
       self.class.attrs.inject({:id => @id}) do |a,key|
         a[key] = send(key)
