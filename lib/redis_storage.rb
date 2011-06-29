@@ -40,6 +40,10 @@ module RedisStorage
         find_by_id(params)   #TODO perhaps make this at some point more generic
       end
     end
+    def self.find_by(key, value)
+      return nil if key.nil? || value.nil?
+      find_by_id($db.get("#{db_key}:#{key}:#{value}"))
+    end
     def self.find_by_id(entry_id)
       return nil if entry_id.nil?
       r = $db.get("#{db_key}:#{entry_id}")

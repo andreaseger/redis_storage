@@ -90,6 +90,13 @@ describe RedisStorage::Model do
           end
         end
       end
+      context '#find_by' do
+        it 'should find instances based on their title' do
+          model = MockModel.find_by :title, "second test"
+          model.title.should eq("second test")
+          model.body.should eq("Dolor Sit")
+        end
+      end
       context '#count' do
         it 'should return the count of the persited model instances' do
           MockModel.count.should eq(MockModel.all.size)
