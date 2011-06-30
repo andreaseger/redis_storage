@@ -40,7 +40,7 @@ module RedisStorage
       if params.nil?
         all
       else
-        load(params)   #TODO perhaps make this at some point more generic
+        find_by :id, params   #TODO perhaps make this at some point more generic
       end
     end
     def self.find_by(key, value)

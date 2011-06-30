@@ -60,8 +60,8 @@ describe RedisStorage::Model do
         MockModel.expects(:all)
         MockModel.find
       end
-      it 'should push the given params from .find to .load' do
-        MockModel.expects(:load).with(3)
+      it 'should push the given params from .find to .find_by :id' do
+        MockModel.expects(:find_by).with(:id,3)
         MockModel.find(3)
       end
       context '#find_by' do
