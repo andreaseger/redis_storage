@@ -4,6 +4,7 @@ RedisStorage
 This is a little gem which provides a redis interface for models. It works out of the box with rails or can be used standalone.
 
 Basically I just got sick rewriting the same logic over and over again for each model of my little sinatra apps so this evolved. Then I wanted to write a new rails app an thought having this in a gem would be really nice, and a generator would be awesome.
+Now I will add new Feature as I need them. You also can let me know what to add.
 
 Features
 ---
@@ -13,20 +14,21 @@ Features
 * compatible with the default rails controller
 * uses ActiveModel to provide things like validations
 * provides a Rails 3 Generator
+* indexing of choosen attributes and find_by
 
 Roadmap aka. ToDo
 ---
 
+* perhaps use some stuff from redis-scripting to make more methods atomic (like find_by or update_attributes)
 * some wrappers for searching in a model(probably will need some indexes)
-* add something to make it easy to add an index(but there will be the update problematic)
 * perhaps some kind of dirty flag - or the ActiveModel::Dirty module, but that will make some things way more complicated
 * more tests/specs are always good
 
 Newest Stuff
 ---
 
-* the generator now calls the test_framework generator for models
-* added a random method which returns a random item from the collection
+* indexing for choosen attributes
+* new find_by :attr
 
 Installation
 ---
@@ -76,6 +78,22 @@ Minimal Example
       end
       attr_accessor *attrs
     end
+
+Indexing and find_by
+---
+
+If you want or need to find records based on a attribute you have to add it to the index_for array like this.
+
+    def self.index_for
+      [:some, :attributes, :to, :index]
+    end
+
+The elements should be symbols and have to also be element of attrs.
+After that you can use the following to get the the instance.
+
+    MyModel.find_by :key, "search"
+
+Also I should mention that you should update record only via the update_attributes method, otherwise the indexes will become corrupt.
 
 Rails 3 Integration
 ---

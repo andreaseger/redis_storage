@@ -4,6 +4,9 @@ class MockModel < RedisStorage::Model
     [:body, :title]
   end
   attr_accessor *attrs
+  def self.index_for
+    [:title]
+  end
 end
 
 describe RedisStorage::Model do
@@ -57,18 +60,41 @@ describe RedisStorage::Model do
         MockModel.expects(:all)
         MockModel.find
       end
-      it 'should push the given Params from .find to .find_by_id' do
-        MockModel.expects(:find_by_id).with(3)
+      it 'should push the given params from .find to .load' do
+        MockModel.expects(:load).with(3)
         MockModel.find(3)
       end
-      context '#find_by_id' do
+      context '#find_by' do
+        it "should call load if called find_by :id" do
+          MockModel.expects(:load)
+          MockModel.find_by(:id,3)
+        end
         1.upto(4) do |i|
-          it "should find record #{i} and create a new instance" do
-            record = MockModel.find_by_id(i)
+          it "should find record #{i} by id, load it and create a new instance" do
+            record = MockModel.find_by :id, i
             record.id.should == i
             record.body.should == h[i-1]['body']
             record.title.should == h[i-1]['title']
           end
+        end
+        it 'should find instances based on their title' do
+          model = MockModel.find_by :title, "second test"
+          model.title.should eq("second test")
+          model.body.should eq("Dolor Sit")
+        end
+        it 'should still find by title after updating the title' do
+          m = MockModel.first
+          m.update_attributes({'title' => "f**k that title"})
+          n = MockModel.find_by :title, "f**k that title"
+          n.title.should == "f**k that title"
+          n.id.should == m.id
+        end
+        it 'should no longer find by the old title after updating the title' do
+          m = MockModel.first
+          t = m.title
+          m.update_attributes({'title' => "f**k that title"})
+          n = MockModel.find_by :title, t
+          n.should be_nil
         end
       end
       context '#all' do
@@ -88,13 +114,6 @@ describe RedisStorage::Model do
             m.body.should eq(h[i-1]['body'])
             m.title.should eq(h[i-1]['title'])
           end
-        end
-      end
-      context '#find_by' do
-        it 'should find instances based on their title' do
-          model = MockModel.find_by :title, "second test"
-          model.title.should eq("second test")
-          model.body.should eq("Dolor Sit")
         end
       end
       context '#count' do
@@ -143,7 +162,7 @@ describe RedisStorage::Model do
       end
       it 'should add the id to the persisted set in redis' do
         id = model.save
-        $db.sismember("MockModel:persisted", id).should be_true
+        $db.sismember("MockModel:persisted", "MockModel:#{id}").should be_true
       end
     end
     context '#update_attributes' do
@@ -173,7 +192,7 @@ describe RedisStorage::Model do
       it 'should remove the id from the persisted set in redis' do
         id=model.save
         model.delete!
-        $db.sismember("MockModel:persisted", id).should be_false
+        $db.sismember("MockModel:persisted", "MockModel:#{id}").should be_false
       end
     end
 

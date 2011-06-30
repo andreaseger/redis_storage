@@ -19,6 +19,9 @@ module RedisStorage
     attr_accessor :id
     attr_reader :errors
 
+    def self.index_for
+      []
+    end
     def self.build(params)
       new params
     end
@@ -31,29 +34,27 @@ module RedisStorage
 
     def self.random
       i = $db.srandmember(persisted_key)
-      find_by_id(i) unless i.nil?
+      load(i) unless i.nil?
     end
     def self.find(params=nil)
       if params.nil?
         all
       else
-        find_by_id(params)   #TODO perhaps make this at some point more generic
+        load(params)   #TODO perhaps make this at some point more generic
       end
     end
     def self.find_by(key, value)
-      return nil if key.nil? || value.nil?
-      find_by_id($db.get("#{db_key}:#{key}:#{value}"))
-    end
-    def self.find_by_id(entry_id)
-      return nil if entry_id.nil?
-      r = $db.get("#{db_key}:#{entry_id}")
-      new(JSON.parse(r)) unless r.nil?
+      if key == :id
+        load "#{db_key}:#{value}"
+      elsif index_for.include? key
+        load($db.get("#{db_key}:#{key}:#{value.hash}"))
+      else
+        nil
+      end
     end
 
     def self.all
-      keys = $db.smembers(persisted_key).map do |i|
-        "#{db_key}:#{i}"
-      end
+      keys = $db.smembers(persisted_key)
 
       if keys.empty?
         []
@@ -68,10 +69,10 @@ module RedisStorage
       $db.scard(persisted_key)
     end
     def self.first
-      find_by_id $db.smembers(persisted_key).sort.first
+      load $db.smembers(persisted_key).sort.first
     end
     def self.last
-      find_by_id $db.smembers(persisted_key).sort.last
+      load $db.smembers(persisted_key).sort.last
     end
     def serializable_hash
       self.class.attrs.inject({:id => @id}) do |a,key|
@@ -84,19 +85,23 @@ module RedisStorage
     end
 
     def update_attributes(params)
+      delete!
       params.each do |key, value|
         send("#{key}=", value) unless key.to_sym == :id
       end
       save
     end
     def save
-      unless persisted?
+      if @id.nil?
         @id = $db.incr(self.class.next_id_key)
       end
       if valid?
         $db.multi do
           $db.set db_key, to_json
-          $db.sadd self.class.persisted_key, id
+          $db.sadd self.class.persisted_key, db_key
+          for key in self.class.index_for do
+            $db.set "#{self.class.db_key}:#{key}:#{send(key).hash}", db_key
+          end
         end
         @id
       else
@@ -111,7 +116,10 @@ module RedisStorage
       if persisted?
         $db.multi do
           $db.del db_key
-          $db.srem self.class.persisted_key, id
+          $db.srem self.class.persisted_key, db_key
+          for key in self.class.index_for do
+            $db.del "#{self.class.db_key}:#{key}:#{send(key).hash}"
+          end
         end
         true
       else
@@ -123,7 +131,7 @@ module RedisStorage
       if id.nil?
         false
       else
-        $db.sismember(self.class.persisted_key, id)
+        $db.sismember(self.class.persisted_key, db_key)
       end
     end
 
@@ -145,6 +153,11 @@ module RedisStorage
       end
     end
     private
+    def self.load(key)
+      return nil if key.nil?
+      r = $db.get(key)
+      new(JSON.parse(r)) unless r.nil?
+    end
     def self.next_id_key
       "#{db_key}:next_id"
     end
