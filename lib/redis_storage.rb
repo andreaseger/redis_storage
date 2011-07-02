@@ -69,10 +69,10 @@ module RedisStorage
       $db.scard(persisted_key)
     end
     def self.first
-      load $db.smembers(persisted_key).sort.first
+      load $db.smembers(persisted_key).sort_by{|s| s.split(':')[1].to_i}.first
     end
     def self.last
-      load $db.smembers(persisted_key).sort.last
+      load $db.smembers(persisted_key).sort_by{|s| s.split(':')[1].to_i}.last
     end
     def serializable_hash
       self.class.attrs.inject({:id => @id}) do |a,key|
