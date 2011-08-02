@@ -120,6 +120,7 @@ Tested with RSpec and testunit for the generator for
 * MRI 1.9.2
 * rbx
 * rbx-2.0.0pre
+* ruby-1.9.3-preview1
 
 Inspired by
 
