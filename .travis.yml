@@ -4,3 +4,6 @@ rvm:
   - 1.9.3
   - rbx
   #- rbx-2.0
+notifications:
+  email:
+    - dev@eger.lc
