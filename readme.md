@@ -6,6 +6,8 @@ This is a little gem which provides a redis interface for models. It works out o
 Basically I just got sick rewriting the same logic over and over again for each model of my little sinatra apps so this evolved. Then I wanted to write a new rails app an thought having this in a gem would be really nice, and a generator would be awesome.
 Now I will add new Feature as I need them. You also can let me know what to add.
 
+[![Build Status](https://secure.travis-ci.org/sch1zo/redis_storage.png)](http://travis-ci.org/sch1zo/redis_storage)
+
 Features
 ---
 
