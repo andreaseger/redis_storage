@@ -99,7 +99,7 @@ describe RedisStorage::Model do
       end
       context '#all' do
         it 'should return an empty array if there are no entries' do
-          Redis.any_instance.stubs(:smembers => [])
+          MockRedis.any_instance.stubs(:smembers => [])
           records = MockModel.all
           records.should eq([])
         end

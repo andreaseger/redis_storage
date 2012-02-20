@@ -2,16 +2,15 @@ require 'rubygems'
 require 'bundler/setup'
 
 require './lib/redis_storage' # and any other gems you need
-require 'redis'
+require 'mock_redis'
 
 RSpec.configure do |config|
   config.mock_with :mocha
   config.before(:all) do
-    $db = Redis.new({})
+    $db = MockRedis.new
   end
   config.before(:each) do
-    $db.select 12
-    $db.flushdb
+    $db.flushall
   end
 end
 

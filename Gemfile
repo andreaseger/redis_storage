@@ -4,10 +4,6 @@ source "http://rubygems.org"
 gemspec
 
 group :development do
-  # irb stuff
-  gem 'wirble'
-  gem 'hirb'
-  gem 'awesome_print'
-  gem 'bond'
-  gem 'sketches'
+  gem 'pry'
+  gem 'pry-nav'
 end
