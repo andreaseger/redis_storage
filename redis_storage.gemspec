@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '>= 2.8.0'
   s.add_development_dependency 'mocha', '>= 0.10.4'
   s.add_development_dependency 'mock_redis', '>= 0.3.0'
+  s.add_development_dependency 'generator_spec', '>= 0.8.5'
   s.add_development_dependency 'rails', '>= 3.2.0'
 
   s.rubyforge_project = "redis_storage"

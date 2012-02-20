@@ -117,16 +117,10 @@ or
 meta
 ---
 
-Tested with RSpec and testunit for the generator for
-* ree-1.8.7-2011.03
-* MRI 1.9.2
-* rbx
-* rbx-2.0.0pre
-* ruby-1.9.3-preview1
+Tested with RSpec via [travis-ci](http://travis-ci.org/sch1zo/redis_storage) for
 
-Inspired by
-
-* some ideas from the redis backend in [scanty-redis](https://github.com/adamwiggins/scanty-redis)
-* various small sinatra projects from myself which use a pre version of this gem
+* ree
+* MRI 1.9.{2,3}
+* rbx-{18,19}mode
 
 sch1zo
