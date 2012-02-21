@@ -1,5 +1,8 @@
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+
+Bundler.setup
+Bundler.require(:default, :test)
 
 require './lib/redis_storage' # and any other gems you need
 require 'mock_redis'

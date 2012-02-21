@@ -1,12 +1,7 @@
 require 'spec_helper'
 class MockModel < RedisStorage::Model
-  def self.attrs
-    [:body, :title]
-  end
-  attr_accessor *attrs
-  def self.index_for
-    [:title]
-  end
+  attribute :body, :title
+  index :title
 end
 
 describe RedisStorage::Model do

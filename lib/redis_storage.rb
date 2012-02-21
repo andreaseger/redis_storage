@@ -8,25 +8,35 @@ module RedisStorage
     include ActiveModel::Validations
     include ActiveModel::Conversion
     extend ActiveModel::Naming
-
     validates_presence_of :id
-
-    def self.attrs
-      []
-    end
-
-    attr_accessor *attrs
     attr_accessor :id
     attr_reader :errors
 
-    def self.index_for
-      []
+    @@_attributes = Hash.new { |hash, key| hash[key] = [] }
+    @@_indizies = Hash.new { |hash, key| hash[key] = [] }
+
+    def self.attribute *attr
+      attr.each do |name|
+        define_method(name) do
+          @_attributes[name]
+        end
+        define_method(:"#{name}=") do |v|
+          @_attributes[name] = v
+        end
+        attributes << name unless attributes.include? name
+      end
     end
-    def self.build(params)
+    def self.index *attr
+      attr.each do |name|
+        indizies << name unless indizies.include? name
+      end
+    end
+
+    def self.build params
       new params
     end
 
-    def self.create(params)
+    def self.create params
       obj = build params
       obj.save
       obj
@@ -46,7 +56,7 @@ module RedisStorage
     def self.find_by(key, value)
       if key == :id
         load "#{db_key}:#{value}"
-      elsif index_for.include? key
+      elsif indizies.include? key
         load($db.get("#{db_key}:#{key}:#{value.hash}"))
       else
         nil
@@ -75,7 +85,7 @@ module RedisStorage
       load $db.smembers(persisted_key).sort_by{|s| s.split(':')[1].to_i}.last
     end
     def serializable_hash
-      self.class.attrs.inject({:id => @id}) do |a,key|
+      attributes.inject({:id => @id}) do |a,key|
         a[key] = send(key)
         a
       end
@@ -99,7 +109,7 @@ module RedisStorage
         $db.multi do
           $db.set db_key, to_json
           $db.sadd self.class.persisted_key, db_key
-          for key in self.class.index_for do
+          indizies.each do |key|
             $db.set "#{self.class.db_key}:#{key}:#{send(key).hash}", db_key
           end
         end
@@ -117,7 +127,7 @@ module RedisStorage
         $db.multi do
           $db.del db_key
           $db.srem self.class.persisted_key, db_key
-          for key in self.class.index_for do
+          indizies.each do |key|
             $db.del "#{self.class.db_key}:#{key}:#{send(key).hash}"
           end
         end
@@ -146,6 +156,8 @@ module RedisStorage
     end
 
     def initialize(params={})
+      @_attributes = {}
+      @_indizies = {}
       @id = nil
       @errors = ActiveModel::Errors.new(self)
       params.each do |key, value|
@@ -161,5 +173,18 @@ module RedisStorage
     def self.next_id_key
       "#{db_key}:next_id"
     end
+    def self.attributes
+      @@_attributes[self]
+    end
+    def self.indizies
+      @@_indizies[self]
+    end
+    def attributes
+      self.class.attributes
+    end
+    def indizies
+      self.class.indizies
+    end
+
   end
 end

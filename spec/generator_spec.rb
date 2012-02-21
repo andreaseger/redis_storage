@@ -17,9 +17,7 @@ describe ::Rails::Generators::RedisGenerator do
         directory 'models' do
           file 'schedule.rb' do
             contains "class Schedule < RedisStorage::Model"
-            contains "attr_accessor *attrs"
-            contains "def self.attr"
-            contains "[ :id, :title, :body, :created_at ]"
+            contains "attribute :title, :body, :created_at"
           end
         end
       end
