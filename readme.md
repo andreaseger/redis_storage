@@ -65,20 +65,14 @@ create a model which inherit from RedisStorage::Model
 
 and define the models attributes via self.attrs, additional to the defined attributes there will always be an attribute id
 
-    def self.attrs
-      [:body, :title]
-    end
-    attr_accessor *attrs
+    attribute :body, :title
 
 Minimal Example
 ---
 
     require 'redis_storage'
     class MyModel < RedisStorage::Model
-      def self.attrs
-        [:body, :title]
-      end
-      attr_accessor *attrs
+      attribute :body, :title
     end
 
 Indexing and find_by
@@ -86,9 +80,7 @@ Indexing and find_by
 
 If you want or need to find records based on a attribute you have to add it to the index_for array like this.
 
-    def self.index_for
-      [:some, :attributes, :to, :index]
-    end
+    index :some, :attributes, :to, :index
 
 The elements should be symbols and have to also be element of attrs.
 After that you can use the following to get the the instance.
