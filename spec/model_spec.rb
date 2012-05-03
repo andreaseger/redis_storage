@@ -1,13 +1,13 @@
 require 'spec_helper'
 class MockModel < RedisStorage::Model
-  attribute :body, :title
-  index :title
+  attribute :body, :title, :user_id
+  index :title, :user_id
 end
 
 describe RedisStorage::Model do
   it_should_behave_like "ActiveModel"
   let(:modelhash) do
-    {'body'=>"Lorem Ipsum", 'title' => "some test"}
+    {'body'=>"Lorem Ipsum", 'title' => "some test", 'user_id' => 3}
   end
 
   context 'class' do
@@ -41,10 +41,11 @@ describe RedisStorage::Model do
     end
     context '#find' do
       let(:h) do
-        [ {'body' =>"Lorem Ipsum", 'title' => "first test"},
-          {'body' =>"Dolor Sit", 'title' => "second test"},
-          {'body' =>"Amet consetetur", 'title' => "third test"},
-          {'body' =>"sadipscing elitr", 'title' => "forth test"}]
+        [ {'body' =>"Lorem Ipsum", 'title' => "first test", 'user_id' => 1},
+          {'body' =>"Dolor Sit", 'title' => "second test", 'user_id' => 2},
+          {'body' =>"Amet consetetur", 'title' => "third test", 'user_id' => 3},
+          {'body' =>"sadipscing elitr", 'title' => "forth test", 'user_id' => 2},
+          {'body' =>"Vivamus fermentum", 'title' => "fifth test", 'user_id' => 3}]
       end
       before(:each) do
         h.each do |e|
@@ -64,7 +65,7 @@ describe RedisStorage::Model do
           MockModel.expects(:load)
           MockModel.find_by(:id,3)
         end
-        1.upto(4) do |i|
+        1.upto(5) do |i|
           it "should find record #{i} by id, load it and create a new instance" do
             record = MockModel.find_by :id, i
             record.id.should == i
@@ -91,16 +92,26 @@ describe RedisStorage::Model do
           n = MockModel.find_by :title, t
           n.should be_nil
         end
+        context "nonunique" do
+          it "should give the object directly if only a single one availabe" do
+            m = MockModel.find_by :user_id, 1
+            m.body.should == h[0]['body']
+          end
+          it "should deliver a array of objects of multiple one in db" do
+            m = MockModel.find_by :user_id, 2
+            m.should have(2).things
+          end
+        end
       end
       context '#all' do
         it 'should return an empty array if there are no entries' do
           MockRedis.any_instance.stubs(:smembers => [])
           records = MockModel.all
-          records.should eq([])
+          records.should be_nil
         end
         it 'should return all entries' do
           records = MockModel.all
-          records.size.should eq(4)
+          records.should have(h.count).things
         end
         it 'should return an Array with all entries' do
           records = MockModel.all
@@ -123,7 +134,7 @@ describe RedisStorage::Model do
       end
       context '#last' do
         it 'should return the instance with the newest - highest id' do
-          MockModel.last.id.should eq(4)
+          MockModel.last.id.should eq(h.count)
         end
       end
     end

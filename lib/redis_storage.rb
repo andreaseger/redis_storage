@@ -57,7 +57,7 @@ module RedisStorage
       if key == :id
         load "#{db_key}:#{value}"
       elsif indizies.include? key
-        load($db.get("#{db_key}:#{key}:#{value.hash}"))
+        load_many $db.smembers("#{db_key}:#{key}:#{value.hash}")
       else
         nil
       end
@@ -66,13 +66,7 @@ module RedisStorage
     def self.all
       keys = $db.smembers(persisted_key)
 
-      if keys.empty?
-        []
-      else
-        $db.mget(*keys).inject([]) do |a,json|
-          a << new(JSON.parse(json))
-        end
-      end
+      load_many keys
     end
 
     def self.count
@@ -110,7 +104,7 @@ module RedisStorage
           $db.set db_key, to_json
           $db.sadd self.class.persisted_key, db_key
           indizies.each do |key|
-            $db.set "#{self.class.db_key}:#{key}:#{send(key).hash}", db_key
+            $db.sadd "#{self.class.db_key}:#{key}:#{send(key).hash}", db_key
           end
         end
         @id
@@ -128,7 +122,7 @@ module RedisStorage
           $db.del db_key
           $db.srem self.class.persisted_key, db_key
           indizies.each do |key|
-            $db.del "#{self.class.db_key}:#{key}:#{send(key).hash}"
+            $db.srem "#{self.class.db_key}:#{key}:#{send(key).hash}", db_key
           end
         end
         true
@@ -165,10 +159,21 @@ module RedisStorage
       end
     end
     private
-    def self.load(key)
+    def self.load key
       return nil if key.nil?
       r = $db.get(key)
       new(JSON.parse(r)) unless r.nil?
+    end
+    def self.load_many keys
+      if keys.empty?
+        nil
+      elsif keys.count == 1
+        load keys.first
+      else
+        $db.mget(*keys).inject([]) do |a,json|
+          a << new(JSON.parse(json))
+        end
+      end
     end
     def self.next_id_key
       "#{db_key}:next_id"
