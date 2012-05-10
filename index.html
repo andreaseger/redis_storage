@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Redis Storage by sch1zo</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Redis Storage</h1>
+        <p>gem redis ruby</p>
+        <p class="view"><a href="https://github.com/sch1zo/redis_storage">View the Project on GitHub <small>sch1zo/redis_storage</small></a></p>
+        <ul>
+          <li><a href="https://github.com/sch1zo/redis_storage/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/sch1zo/redis_storage/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/sch1zo/redis_storage">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>RedisStorage</h2>
+
+<p>This is a little gem which provides a redis interface for models. It works out of the box with rails or can be used standalone.</p>
+
+<p>Basically I just got sick rewriting the same logic over and over again for each model of my little sinatra apps so this evolved. Then I wanted to write a new rails app an thought having this in a gem would be really nice, and a generator would be awesome.
+Now I will add new Feature as I need them. You also can let me know what to add.</p>
+
+<p><a href="http://travis-ci.org/sch1zo/redis_storage"><img src="https://secure.travis-ci.org/sch1zo/redis_storage.png" alt="Build Status"></a></p>
+
+<h2>Features</h2>
+
+<ul>
+<li>stores the attributes_hash of the model as JSON in redis</li>
+<li>creates an index of all used ids(which will be set automatically)</li>
+<li>compatible with the default rails controller</li>
+<li>uses ActiveModel to provide things like validations</li>
+<li>provides a Rails 3 Generator</li>
+<li>indexing of choosen attributes and find_by</li>
+</ul><h2>Roadmap aka. ToDo</h2>
+
+<ul>
+<li>perhaps use some stuff from redis-scripting to make more methods atomic (like find_by or update_attributes)</li>
+<li>some wrappers for searching in a model(probably will need some indexes)</li>
+<li>perhaps some kind of dirty flag - or the ActiveModel::Dirty module, but that will make some things way more complicated</li>
+<li>more tests/specs are always good</li>
+</ul><h2>Newest Stuff</h2>
+
+<ul>
+<li>indexing for choosen attributes</li>
+<li>new find_by :attr</li>
+</ul><h2>Installation</h2>
+
+<p>As this gem need redis running you will have to install it(see redis.io for more information on that task)</p>
+
+<p>Then just add the gem to your Gemfile and run bundler</p>
+
+<pre><code>gem 'redis_storage'
+</code></pre>
+
+<p>or just install it manually</p>
+
+<pre><code>gem install redis_storage
+</code></pre>
+
+<p>Then this gem will need a global object $db which just is a Redis connection.</p>
+
+<pre><code>redis_config = { :host =&gt; 'localhost', :port =&gt; 6379, :password =&gt; '', :db =&gt; 1 }
+$db = Redis.new(redis_config)
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>require the gem in your code</p>
+
+<pre><code>require 'redis_storage'
+</code></pre>
+
+<p>create a model which inherit from RedisStorage::Model</p>
+
+<pre><code>class MyModel &lt; RedisStorage::Model
+...
+end
+</code></pre>
+
+<p>and define the models attributes via self.attrs, additional to the defined attributes there will always be an attribute id</p>
+
+<pre><code>attribute :body, :title
+</code></pre>
+
+<h2>Minimal Example</h2>
+
+<pre><code>require 'redis_storage'
+class MyModel &lt; RedisStorage::Model
+  attribute :body, :title
+end
+</code></pre>
+
+<h2>Indexing and find_by</h2>
+
+<p>If you want or need to find records based on a attribute you have to add it to the index_for array like this.</p>
+
+<pre><code>index :some, :attributes, :to, :index
+</code></pre>
+
+<p>The elements should be symbols and have to also be element of attrs.
+After that you can use the following to get the the instance.</p>
+
+<pre><code>MyModel.find_by :key, "search"
+</code></pre>
+
+<p>Also I should mention that you should update record only via the update_attributes method, otherwise the indexes will become corrupt.</p>
+
+<h2>Rails 3 Integration</h2>
+
+<p>to initialize redis there is a rake task</p>
+
+<pre><code>rake install_redis
+</code></pre>
+
+<p>The task will install a initializer file which creates the above mentioned $db object and a redis.yml file to configure the redis connection.</p>
+
+<p>There is also a Rails 3 Generator which will generates the above mentioned model</p>
+
+<pre><code>rails g redis model attr1 attr2
+</code></pre>
+
+<p>or</p>
+
+<pre><code>rails g scaffold model attr1:string attr2:int -o redis
+</code></pre>
+
+<h2>meta</h2>
+
+<p>Tested with RSpec via <a href="http://travis-ci.org/sch1zo/redis_storage">travis-ci</a> for</p>
+
+<ul>
+<li>ree</li>
+<li>MRI 1.9.{2,3}</li>
+<li>rbx-{18,19}mode</li>
+</ul><p>sch1zo</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/sch1zo">sch1zo</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-31620626-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
